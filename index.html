@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="実物のドレープを使うパーソナルカラー診断を、みんなで観察。比較ポイントの投影、観察の記録、診断後の服の配色をサポートします。">
+  <title>iroha — 自分の色を、見つけよう。</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23232726'/%3E%3Ccircle cx='20' cy='12' r='4' fill='%23e5f0a4'/%3E%3Cpath d='M16 20h8v13h-8z' fill='%23e5f0a4'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <script src="drape.js" defer></script>
+  <script src="content.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">本文へ</a>
+  <header class="site-header">
+    <a class="brand" href="#drape" aria-label="iroha ホーム">iroha<span class="brand-dot">.</span><span class="brand-caption">色を選ぶ、小さな実験室。</span></a>
+    <nav aria-label="メインナビゲーション">
+      <a href="#drape" data-nav="drape">ドレープで比べる</a>
+      <a href="#palette" data-nav="palette">服の配色をつくる</a>
+      <a href="#notes" data-nav="notes">色のノート</a>
+    </nav>
+    <button class="saved-button" id="open-saved" aria-label="保存した配色を見る"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg><span class="saved-label">保存した色</span><span id="saved-count">0</span></button>
+  </header>
+  <main id="main" tabindex="-1">
+    <section id="page-drape" class="page">
+      <div class="intro drape-intro"><div><p class="eyebrow">PERSONAL COLOR · LIVE SESSION</p><h1>色の違いを、<span class="serif">みんなで見つける。</span></h1><p class="intro-text">実物のドレープを見ながら、ひとつずつ観察。診断の時間を、分かりやすく。</p></div><div class="session-tag"><span>DRAPING GUIDE</span><strong>見る。比べる。<br>言葉にする。</strong></div></div>
+      <div class="session-toolbar"><div class="section-heading"><h2><span class="section-index">01</span>ドレープを比べる</h2></div><div class="inline-actions"><button class="text-button" id="session-help-button">使い方</button><button class="presentation-button" id="enter-presentation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V3h6m6 0h6v6M3 15v6h6m9 0h6v-6"/></svg>投影モード</button></div></div>
+      <div class="session-layout">
+        <div id="presentation-stage" class="presentation-stage">
+          <div class="stage-topline"><span>IROHA / DRAPING SESSION</span><button id="exit-presentation" hidden>投影を終了 <kbd>Esc</kbd></button><span id="stage-step">OBSERVE 01 / 06</span></div>
+          <div class="focus-heading"><p class="eyebrow">いま、見るところ</p><h2 id="focus-title">目の下の影</h2><p id="focus-description">暗い部分と、そのまわりの肌との差を見比べましょう。</p></div>
+          <div class="drape-pair" aria-label="実物のドレープAとBの目印"><div class="drape-sample" id="drape-a"><span class="sample-letter">A</span><div><span class="sample-type" id="label-a">スプリング</span><span class="sample-name" id="name-a">明るいコーラル</span></div></div><div class="versus" aria-hidden="true">&</div><div class="drape-sample" id="drape-b"><span class="sample-letter">B</span><div><span class="sample-type" id="label-b">サマー</span><span class="sample-name" id="name-b">穏やかなローズ</span></div></div></div>
+          <div class="audience-prompt"><span class="prompt-label">見比べるポイント</span><p id="focus-question">目の下の影は、どちらで強く見えますか？</p><div class="audience-answers"><span>Aのほうが強い</span><span>差がない</span><span>Bのほうが強い</span><span>分からない</span></div></div>
+          <div class="stage-footer"><p>画面の色は目印です。<strong>実物の顔とドレープ</strong>を見て比べてください。</p><div class="step-navigation"><button id="previous-focus" aria-label="前の観察項目">前へ</button><span id="focus-progress">1 / 6</span><button id="next-focus" aria-label="次の観察項目">次へ</button></div></div>
+        </div>
+        <aside class="session-controls"><p class="eyebrow">SESSION SETTINGS</p><h3>比較を準備する</h3><label class="form-field">比べる色のグループ<select id="drape-family"><option value="red">赤・ピンク系</option><option value="blue">青系</option><option value="green">緑系</option><option value="neutral">白・ベーシック系</option></select></label><div class="season-selects"><label class="form-field"><span class="ab-label">A</span>タイプの目印<select id="season-a"><option value="spring">スプリング</option><option value="summer">サマー</option><option value="autumn">オータム</option><option value="winter">ウィンター</option><option value="custom">指定しない</option></select></label><label class="form-field"><span class="ab-label">B</span>タイプの目印<select id="season-b"><option value="spring">スプリング</option><option value="summer" selected>サマー</option><option value="autumn">オータム</option><option value="winter">ウィンター</option><option value="custom">指定しない</option></select></label></div><details class="drape-custom"><summary>手元のドレープに合わせる</summary><label class="form-field">Aの呼び名<input id="drape-name-a" maxlength="30" value="明るいコーラル"></label><label class="form-field">Bの呼び名<input id="drape-name-b" maxlength="30" value="穏やかなローズ"></label><div class="inline-actions"><label>Aの目印 <input type="color" id="drape-color-a" value="#E9937C"></label><label>Bの目印 <input type="color" id="drape-color-b" value="#BC849C"></label></div></details><label class="checkbox-line"><input type="checkbox" id="hide-season-labels">タイプ名を隠して比べる</label><p class="micro">4シーズンは進行のための目印です。表示色は本サイト独自の例で、公式の診断用ドレープではありません。</p><div class="session-divider"></div><label class="form-field">観察する場所<select id="focus-select"><option value="0">01　目の下の影</option><option value="1">02　鼻まわりの色むら</option><option value="2">03　顔全体の色味</option><option value="3">04　目元・唇の輪郭</option><option value="4">05　顎と首の境目</option><option value="5">06　顔と布のバランス</option></select></label><p class="micro keyboard-hint">投影中は ← → キーで項目を切り替えられます。</p></aside>
+      </div>
+      <div class="session-record-section"><div class="section-heading"><h2><span class="section-index">02</span>見えた違いを記録する</h2><p>投影モードでは、この記録欄は表示されません。</p></div><div class="record-workspace"><div><p class="mini-label" id="record-question">目の下の影は、どちらで強く見えますか？</p><div id="observation-answers" class="answer-options"><button data-answer="a" aria-pressed="false">Aのほうが強い</button><button data-answer="same" aria-pressed="false">差がない</button><button data-answer="b" aria-pressed="false">Bのほうが強い</button><button data-answer="unknown" aria-pressed="false">分からない</button></div><p class="micro">強い・弱いに点数は付けません。目の前で見えた違いを記録します。</p></div><div><label class="form-field">観察のメモ<textarea id="observation-memo" maxlength="600" placeholder="例：Bでは、目の下の暗い部分と頬の差が小さく見えた。"></textarea></label><button class="primary-button" id="record-observation">この比較を記録</button></div></div><div class="record-summary"><span><strong id="record-count">0</strong> 件の観察記録</span><button class="text-button" id="show-records">記録と診断のまとめを見る</button></div></div>
+      <section class="session-guide"><div><p class="eyebrow">HOW TO COMPARE</p><h2>ひとつの場所を、<br><span class="serif">ひとつずつ。</span></h2></div><ol><li><span>01</span><div><h3>見る場所をそろえる</h3><p>実物のドレープをA・Bと交互に当て、同じ照明・姿勢で比べます。</p></div></li><li><span>02</span><div><h3>違いと好みを分ける</h3><p>まず「どこがどう見えたか」。その後に、本人の好きな見え方を聞きます。</p></div></li><li><span>03</span><div><h3>判断は、根拠と一緒に</h3><p>観察を見返し、診断者が結果をまとめます。分からない時は保留で大丈夫。</p></div></li></ol></section>
+      <aside class="session-bottom-note"><p>肌の白さや影の少なさを、一律の「正解」にしない。<br><span>このサイトは、観察と説明を助けるツールです。診断タイプの自動判定は行いません。</span></p><a href="#notes">根拠と考え方を読む</a></aside>
+    </section>
+    <section id="page-palette" class="page">
+      <div class="intro">
+        <div><p class="eyebrow">A LITTLE COLOR, A LITTLE MORE YOU.</p><h1>自分の色を、<span class="serif">見つけよう。</span></h1><p class="intro-text">「似合う」も、「好き」も。まずは、色を並べるところから。</p></div>
+        <div class="intro-mark" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><small>EXPLORE YOUR COLORS</small></div>
+      </div>
+      <div class="section-heading"><h2><span class="section-index">01</span>服の配色をつくる</h2><p>色をタップして、組み合わせを試してみよう。</p></div>
+      <div class="palette-workspace">
+        <div class="palette-preview">
+          <div class="preview-topline"><span>YOUR COLOR PALETTE</span><span id="palette-counter">01 / EVERYDAY</span></div>
+          <div id="color-composition" class="color-composition" aria-label="配色プレビュー">
+            <button class="color-area area-top" data-select-part="0" aria-label="トップスの色を編集"><span>01</span><span class="area-label">TOPS<small>トップス</small></span></button>
+            <button class="color-area area-bottom" data-select-part="1" aria-label="ボトムスの色を編集"><span>02</span><span class="area-label">BOTTOMS<small>ボトムス</small></span></button>
+            <button class="color-area area-accent" data-select-part="2" aria-label="小物の色を編集"><span>03</span><span class="area-label">ACCENT<small>小物</small></span></button>
+          </div>
+          <div id="palette-legend" class="palette-legend"></div>
+          <p class="micro">面積の違いも含めて、配色のバランスを見るための色見本です。</p>
+        </div>
+        <div class="palette-controls">
+          <div class="control-heading"><span class="eyebrow">COLOR PLAY</span><button class="text-button" id="reset-palette">初期の色に戻す</button></div>
+          <h3>ひとつ変えると、<br>組み合わせが変わる。</h3>
+          <div class="part-tabs" role="group" aria-label="色を変えるアイテム"><button data-part="0" aria-pressed="true">トップス</button><button data-part="1" aria-pressed="false">ボトムス</button><button data-part="2" aria-pressed="false">小物</button></div>
+          <div id="color-swatches" class="swatch-grid" role="group" aria-label="色を選ぶ"></div>
+          <div class="selected-color-line"><span id="selected-color-name"></span><div><span id="selected-color-hex"></span><label class="custom-color-label" for="custom-color">自由に選ぶ<input id="custom-color" type="color" value="#e7e8df" aria-label="自由な色を選ぶ"></label></div></div>
+          <div class="palette-reading"><span class="mini-label">この配色の見どころ</span><p id="palette-insight" aria-live="polite"></p></div>
+          <button class="primary-button" id="save-palette"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg>この配色を保存</button>
+          <p class="micro storage-note">このブラウザに保存されます。</p>
+        </div>
+      </div>
+      <div class="recipes-section"><div class="section-heading"><h2 class="small-heading">迷ったら、この組み合わせから。</h2><span class="micro">着こなしの提案</span></div><div class="recipe-grid" id="recipe-grid"></div></div>
+      <section class="explore-section"><div class="section-heading"><h2><span class="section-index">02</span>もう少し、色を知る。</h2><span class="eyebrow">FIND YOUR NEXT STEP</span></div><div class="explore-grid"><a href="#drape" class="explore-card"><span class="card-number">01 / COMPARE</span><div class="compare-graphic" aria-hidden="true"><span>A</span><span>B</span></div><h3>顔まわりで、比べてみる。</h3><p>実物のドレープを見ながら、違いと好みを分けて観察。</p><span class="card-link">ドレープで比べる</span></a><a href="#suit" class="explore-card"><span class="card-number">02 / SUIT & PATTERN</span><div class="suit-graphic" aria-hidden="true"><span></span><span></span><span></span></div><h3>スーツにも、色の選択肢を。</h3><p>シャツとネクタイの色、柄の大きさを組み合わせる。</p><span class="card-link">組み合わせを試す</span></a><a href="#notes" class="explore-card editorial-card"><div id="editorial-photo"></div><div class="editorial-copy"><span class="card-number">03 / COLOR NOTES</span><h3>「似合う」の、その先へ。</h3><p>分類のこと、見え方のこと。色選びの前に知っておきたいこと。</p><span class="card-link">色のノートを読む</span></div></a></div></section>
+      <aside class="manifesto"><p class="eyebrow">OUR APPROACH</p><p>タイプに、自分を合わせなくていい。<br><span>自分の目と、自分の好みを、色選びの真ん中に。</span></p><a href="#notes">このサイトの考え方</a></aside>
+    </section>
+    
+    <section id="page-suit" class="page" hidden></section>
+    <section id="page-notes" class="page" hidden></section>
+  </main>
+  <footer><a class="brand" href="#drape">iroha<span class="brand-dot">.</span></a><p>色の選択肢を、あなたの手に。</p><a href="#notes">根拠と、このサイトについて</a><span>© 2026 iroha</span></footer>
+  <dialog id="saved-dialog" aria-labelledby="saved-title"><div class="dialog-head"><div><p class="eyebrow">YOUR COLLECTION</p><h2 id="saved-title">保存した配色</h2></div><button class="close-button" id="close-saved" aria-label="保存した配色を閉じる">×</button></div><p class="muted">このブラウザだけの、小さな色のコレクション。</p><div id="saved-list"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">色の比較ツールを使うには、JavaScriptを有効にしてください。</p></noscript>
+</body>
+</html>
